@@ -1,0 +1,63 @@
+﻿@page "/footwear"
+@using MutirithiaYou_MeBoutique.Models
+@using MutirithiaYou_MeBoutique.Services
+@inject InventoryService InventoryService
+
+<PageTitle>Mutirithia Boutique | Footwear</PageTitle>
+
+<div class="mb-4">
+    <h1 class="h2 fw-bold text-dark">👟 Footwear & Shoes</h1>
+    <p class="text-muted">Browse our collection of durable, premium footwear. Prices negotiable.</p>
+</div>
+
+<div class="row g-4">
+    @if (items == null)
+    {
+        <p>Loading footwear catalogs...</p>
+    }
+    else if (!items.Any())
+    {
+        <p>No footwear items currently in stock. Check back later!</p>
+    }
+    else
+    {
+        @foreach (var item in items)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                    <img src="@item.ImageUrl" class="card-img-top bg-light object-fit-cover" style="height: 240px;" alt="@item.Name">
+                    <div class="card-body d-flex flex-column p-3">
+                        <h5 class="card-title fw-bold text-dark">@item.Name</h5>
+                        <p class="card-text text-muted small flex-grow-1">@item.Description</p>
+
+                        <div class="bg-light p-2 rounded mb-3 small border border-light">
+                            <strong>All-Sizes Available:</strong> @item.SizeRange <br />
+                            <strong>All-Colors Available:</strong> @string.Join(", ", item.AvailableColors)
+                        </div>
+
+                        @{
+                            string footwearPhone = "254720688992"; // 👟 Your verified shoe number
+                            string customMessage = $"Hi Mutirithia! I want to bargain for the footwear item: \"{item.Name}\"";
+                            string whatsappUrl = $"https://wa.me{footwearPhone}?text={Uri.EscapeDataString(customMessage)}";
+                        }
+
+                        <a href="@whatsappUrl" target="_blank" class="btn btn-success d-flex align-items-center justify-content-center gap-2 py-2 fw-bold w-100 shadow-sm">
+                            💬 Negotiate Footwear Price
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<BoutiqueItem>? items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Automatically filter data so only shoes show here
+        items = await InventoryService.GetItemsByCategoryAsync(ItemCategory.Footwear);
+    }
+}
+
